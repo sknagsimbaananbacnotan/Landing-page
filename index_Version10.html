@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>SK Free Wi‑Fi — Connect</title>
+<meta name="theme-color" content="#0b1f4d" />
+<meta name="description" content="SK Free Wi‑Fi captive portal — Connect" />
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --panel:#ffffff;
+    --muted:#6b7280;
+    --accent:#155bea;
+    --accent-2:#0b56ee;
+    --success:#18b87a;
+    --card-radius:20px;
+    --max-width:920px;
+    --font-sans:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+    --font-head:'Poppins',var(--font-sans);
+    --icon-size:44px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    min-height:100dvh;
+    background:linear-gradient(180deg,#03173a 0%,#072a66 55%);
+    display:flex;align-items:flex-start;justify-content:center;padding:clamp(12px,3vw,30px);
+    font-family:var(--font-sans);-webkit-font-smoothing:antialiased;color:#0b1220;
+  }
+  .card{
+    width:min(var(--max-width),100%);background:var(--panel);border-radius:var(--card-radius);
+    padding:clamp(18px,2.4vw,40px);box-shadow:0 14px 34px rgba(2,10,30,0.28);overflow:visible;
+  }
+
+  /* Header */
+  .top{display:grid;grid-template-columns:1fr 1px 1fr;gap:28px;align-items:center;margin-bottom:18px}
+  .divider{width:1px;height:92px;background:#e6edf5;justify-self:center}
+  .sk-ring{--size:clamp(120px,22vw,230px);width:var(--size);height:var(--size);display:grid;place-items:center;position:relative}
+  .sk-ring::before{content:"";position:absolute;inset:6%;border-radius:50%;border:2px solid rgba(23,96,237,.18);box-shadow:0 0 18px rgba(23,96,237,.08);animation:ringPulse 3.2s ease-in-out infinite}
+  .sk-ring::after{content:"";position:absolute;inset:-4%;border-radius:50%;border:1.5px solid transparent;border-top-color:rgba(23,96,237,.7);transform-origin:center;animation:ringSpin 7s linear infinite}
+  @keyframes ringPulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.04);opacity:1}}@keyframes ringSpin{to{transform:rotate(360deg)}}
+  .brand-logo{width:86%;height:86%;object-fit:contain;border-radius:50%;background:#fff;padding:8px;box-shadow:0 8px 18px rgba(11,92,255,0.08);transition:transform .28s,filter .28s}
+  .pldt-wrap{ text-align:left;padding-left:14px }
+  .pldt-wrap .powered{ font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.06em;margin-bottom:8px;text-transform:uppercase;font-family:var(--font-head) }
+  .pldt-logo{max-width:230px;height:auto;display:block}
+
+  /* Connection visual */
+  .connection{display:flex;flex-direction:column;align-items:center;gap:12px;margin:4px 0 18px}
+  .signal{display:flex;align-items:flex-end;gap:8px;justify-content:center;height:92px}
+  .signal .bar{width:18px;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#7fb6ff,var(--accent));box-shadow:0 6px 14px rgba(11,92,255,0.12);transform-origin:bottom center;animation:barPulse 1.6s ease-in-out infinite;opacity:.75}
+  .signal .bar:nth-child(1){height:30px;animation-delay:0s}
+  .signal .bar:nth-child(2){height:54px;animation-delay:.12s}
+  .signal .bar:nth-child(3){height:78px;animation-delay:.24s}
+  .signal .bar:nth-child(4){height:98px;animation-delay:.36s}
+  @keyframes barPulse{0%,100%{transform:scaleY(.7);opacity:.6}45%{transform:scaleY(1);opacity:1}}
+  .signal .check{width:44px;height:44px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;margin-left:8px;box-shadow:0 8px 18px rgba(24,173,103,.16);animation:checkPulse 1.6s ease-in-out infinite}
+  @keyframes checkPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  .success-pill{display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border-radius:999px;background:#eaf8ef;color:#147a43;font-weight:900;letter-spacing:.02em;font-family:var(--font-head)}
+
+  /* Heading */
+  h1{margin:10px 0 6px;font-size:clamp(28px,4vw,42px);line-height:1.02;font-weight:900;color:#172238;text-align:center;font-family:var(--font-head)}
+  p.lead{margin:0 0 16px;color:#556574;font-size:16px;max-width:780px;margin-left:auto;margin-right:auto;text-align:center}
+
+  /* Date/time */
+  .datetime-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px;border-radius:14px;border:1px solid #e6eefb;background:linear-gradient(180deg,#fbfdff,#f4f9ff);width:100%;max-width:520px;margin:12px auto}
+  .datetime-card .date{font-size:14px;color:#65748d;font-weight:800}
+  .datetime-card .time{font-size:34px;color:var(--accent);font-weight:950;margin-top:4px;font-family:var(--font-head)}
+
+  /* Inline CTA */
+  .cta-inline{margin:12px auto 20px;max-width:520px;width:100%;display:flex;flex-direction:column;gap:10px;align-items:stretch}
+  .connect-btn{background:linear-gradient(90deg,var(--accent-2),var(--accent));color:#fff;font-weight:900;border:none;border-radius:12px;padding:14px 18px;font-size:18px;cursor:pointer;box-shadow:0 10px 24px rgba(11,86,238,.16);font-family:var(--font-head)}
+  .connect-btn[disabled]{opacity:.7;cursor:wait;filter:grayscale(.03)}
+  .status-line{font-size:13px;color:var(--muted);font-weight:700;text-align:center;min-height:20px;display:flex;gap:8px;align-items:center;justify-content:center}
+  .sound-toggle{background:transparent;border:0;font-size:18px;cursor:pointer;padding:6px}
+
+  /* Simplified (non-box) details list */
+  .details-card{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:6px}
+  .detail{display:flex;align-items:center;gap:12px;padding:12px 6px;background:transparent;border-radius:10px;min-height:72px}
+  .detail .icon{width:var(--icon-size);height:var(--icon-size);flex:0 0 var(--icon-size);display:grid;place-items:center;color:var(--accent);background:transparent}
+  .detail .label{font-size:11px;color:#7f8ca0;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+  .detail .value{font-size:15px;font-weight:800;color:#1d2940}
+
+  /* Emergency */
+  .emergency{margin-top:18px;padding:14px;border-radius:14px;border:1px solid #ffd2d2;background:#fff7f7;text-align:left}
+  .emergency h3{margin:0 0 8px;color:#b42318;font-size:16px;font-family:var(--font-head)}
+  .emergency .emergency-intro{margin:0 0 8px;color:#5f6b7d;font-size:13px;font-weight:700}
+  .hotline-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+  .hotline{background:#fff;border:1px solid #f7e5e5;padding:10px;border-radius:10px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+  .hotline .name{font-size:11px;color:#6f7b8e;font-weight:800;text-transform:uppercase}
+  .hotline .num{font-size:13px;color:#11203a;font-weight:900}
+  .show-more{margin-top:12px;background:transparent;border:0;color:var(--accent);font-weight:800;cursor:pointer;padding:6px;font-family:var(--font-head)}
+
+  .footer-note{margin-top:14px;font-size:12px;color:#7f8ca0;font-weight:700;text-align:center}
+
+  /* Responsive */
+  @media(max-width:900px){.top{grid-template-columns:1fr 1px 1fr;gap:14px}.details-card{grid-template-columns:repeat(2,1fr)}.hotline-list{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:480px){.top{grid-template-columns:1fr}.divider{display:none}.pldt-wrap{text-align:center;padding-left:0}.details-card{grid-template-columns:1fr}.hotline-list{grid-template-columns:1fr}.datetime-card .time{font-size:28px}}
+
+  @media(prefers-reduced-motion:reduce){.sk-ring::before,.sk-ring::after,.brand-logo,.signal .bar,.signal .check{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="portal-title">
+    <header class="top" role="banner">
+      <div class="sk-wrap">
+        <div class="sk-ring" aria-hidden="false">
+          <img src="logo.png" alt="Sangguniang Kabataan — Brgy. Nagsimbaanan" class="brand-logo" onerror="this.style.display='none';this.parentElement.querySelector('.sk-fallback').style.display='flex'">
+          <div class="sk-fallback" style="display:none;align-items:center;justify-content:center;border-radius:50%;background:#eef4ff;color:#155bea;font-weight:900;font-size:34px;padding:10px;">SK</div>
+        </div>
+      </div>
+
+      <div class="divider" aria-hidden="true"></div>
+
+      <div class="pldt-wrap" aria-hidden="false">
+        <div class="powered">Powered by</div>
+        <img class="pldt-logo" src="pldt-logo.png" alt="PLDT Enterprise" onerror="this.style.filter='grayscale(1)';">
+      </div>
+    </header>
+
+    <section class="connection" aria-label="Connection status">
+      <div class="signal" role="img" aria-hidden="true" aria-label="Connection signal animation">
+        <span class="bar" aria-hidden="true"></span>
+        <span class="bar" aria-hidden="true"></span>
+        <span class="bar" aria-hidden="true"></span>
+        <span class="bar" aria-hidden="true"></span>
+        <div class="check" aria-hidden="true">✓</div>
+      </div>
+
+      <div class="success-pill" role="status" aria-live="polite">
+        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--success)"></span>
+        CONNECTION SUCCESSFUL
+      </div>
+    </section>
+
+    <h1 id="portal-title">Welcome to SK Free‑WiFi Nagsimbaanan</h1>
+    <p class="lead">You are now connected to the free Wi‑Fi service of the Sangguniang Kabataan of Barangay Nagsimbaanan.</p>
+
+    <div class="datetime-card" role="region" aria-label="Date and time">
+      <div class="date" id="date">—</div>
+      <div class="time" id="time" aria-live="off">—</div>
+      <div class="tz">PHILIPPINE STANDARD TIME • ASIA/MANILA</div>
+    </div>
+
+    <div class="cta-inline" aria-label="Connect action">
+      <button id="connectBtn" class="connect-btn" aria-label="Connect to network" type="button" disabled>CONNECT</button>
+      <div id="statusLine" class="status-line" aria-live="polite">
+        <span id="statusText"></span>
+        <button id="soundToggle" class="sound-toggle" title="Toggle sounds" aria-pressed="false">🔊</button>
+      </div>
+    </div>
+
+    <div class="details-card" aria-label="Connection details">
+      <div class="detail" aria-hidden="false">
+        <div class="icon" aria-hidden="true" title="Network">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 8.5a16 16 0 0 1 20 0"/>
+            <path d="M5 12.5a10 10 0 0 1 14 0"/>
+            <path d="M8.5 15.5a4 4 0 0 1 7 0"/>
+            <path d="M12 19.5c0 .6-.8 1-1.2 1-.4 0-1.2-.4-1.2-1 0-.6.8-1 1.2-1 .4 0 1.2.4 1.2 1z" fill="currentColor" stroke="none"/>
+          </svg>
+        </div>
+        <div style="flex:1">
+          <div class="label">NETWORK</div>
+          <div class="value">SK Free‑WiFi Nagsimbaanan</div>
+        </div>
+      </div>
+
+      <div class="detail">
+        <div class="icon" aria-hidden="true" title="Status">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2l6 3v4c0 5.25-3.75 9.75-6 11-2.25-1.25-6-5.75-6-11V5l6-3z"/>
+            <path d="M9.5 12.5l1.8 1.8L15 11.6" stroke="white" stroke-width="1.8" />
+          </svg>
+        </div>
+        <div style="flex:1">
+          <div class="label">STATUS</div>
+          <div class="value">Internet Access Activated</div>
+        </div>
+      </div>
+
+      <div class="detail">
+        <div class="icon" aria-hidden="true" title="Access">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 7v6l4 2"></path>
+          </svg>
+        </div>
+        <div style="flex:1">
+          <div class="label">ACCESS</div>
+          <div class="value">Up to 8 hours / connection</div>
+        </div>
+      </div>
+
+      <div class="detail">
+        <div class="icon" aria-hidden="true" title="Device">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="7" y="2.5" width="10" height="19" rx="2.2"></rect>
+            <path d="M10.5 18.3H13.5"></path>
+          </svg>
+        </div>
+        <div style="flex:1">
+          <div class="label">DEVICE</div>
+          <div class="value" id="deviceInfo">Detecting…</div>
+        </div>
+      </div>
+    </div>
+
+    <section class="emergency" aria-labelledby="emergency-title">
+      <h3 id="emergency-title">Emergency Information</h3>
+      <p class="emergency-intro">If there is an emergency, contact your Punong Barangay, SK Officials, or use the local hotlines below.</p>
+
+      <div class="hotline-list" role="list" aria-label="Key emergency hotlines">
+        <div class="hotline" role="listitem"><div class="name">La Union / National</div><div class="num"><a href="tel:911">911</a></div></div>
+        <div class="hotline" role="listitem"><div class="name">Bacnotan Rescue</div><div class="num"><a href="tel:09195461800">0919‑546‑1800</a></div></div>
+        <div class="hotline" role="listitem"><div class="name">Bacnotan District Hospital</div><div class="num"><a href="tel:09516762335">0951‑676‑2335</a></div></div>
+      </div>
+
+      <button id="toggleHotlines" class="show-more" aria-expanded="false" type="button">Show all hotlines</button>
+
+      <div id="hotlinesFull" class="hotline-list" hidden aria-hidden="true" style="margin-top:10px;">
+        <div class="hotline"><div class="name">MDRRMO</div><div class="num"><a href="tel:09494742161">0949‑474‑2161</a></div></div>
+        <div class="hotline"><div class="name">PNP – Bacnotan</div><div class="num"><a href="tel:09985985156">0998‑598‑5156</a></div></div>
+        <div class="hotline"><div class="name">BFP – Bacnotan</div><div class="num"><a href="tel:09171842711">0917‑184‑2711</a></div></div>
+        <div class="hotline"><div class="name">Coast Guard – San Juan</div><div class="num"><a href="tel:09602886940">0960‑288‑6940</a></div></div>
+        <div class="hotline"><div class="name">Municipal Health Office</div><div class="num"><a href="tel:09098471268">0909‑847‑1268</a></div></div>
+        <div class="hotline"><div class="name">LUELCO – Bacnotan</div><div class="num"><a href="tel:09171204671">0917‑120‑4671</a></div></div>
+        <div class="hotline"><div class="name">MSWDO</div><div class="num"><a href="tel:09285203893">0928‑520‑3893</a></div></div>
+        <div class="hotline"><div class="name">Mayor's Office</div><div class="num"><a href="tel:09295810383">0929‑581‑0383</a></div></div>
+      </div>
+
+      <p class="emergency-note" style="margin-top:10px;">If uncertain which to call, use 911 for national emergency response.</p>
+    </section>
+
+    <div class="footer-note">Official Digital Inclusion Initiative — Sangguniang Kabataan Brgy. Nagsimbaanan</div>
+  </main>
+
+  <!-- Local Sarangola audio file: place Saranggola.mp3 next to index.html -->
+  <audio id="sarangolaAudio" preload="auto">
+    <source src="Saranggola.mp3" type="audio/mpeg">
+  </audio>
+
+<script>
+/* CONFIG */
+const AUTH_URL = "https://omada.example.local/authorize"; // <-- set your auth endpoint
+const POST_MODE = false;
+
+/* How long to play music (ms) before redirecting — adjust as needed */
+const MUSIC_PLAY_DURATION_MS = 3000; // default: 3 seconds
+
+/* utilities */
+function paramsToObject(search){
+  const s=(search||'').replace(/^\?/,''); const out={}; if(!s) return out;
+  s.split('&').forEach(pair=>{ const [k,v='']=pair.split('=').map(decodeURIComponent); if(!k) return; if(out[k]===undefined) out[k]=v; else if(Array.isArray(out[k])) out[k].push(v); else out[k]=[out[k],v]; });
+  return out;
+}
+function buildQuery(obj){ return Object.keys(obj).flatMap(k=> Array.isArray(obj[k])? obj[k].map(i=>`${encodeURIComponent(k)}=${encodeURIComponent(i)}`): `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`).join('&'); }
+
+/* device + clock */
+function detectDevice(){ const ua=navigator.userAgent||navigator.vendor||''; const u=ua.toLowerCase(); let brand='Unrecognized device'; if(/iphone/.test(u)) brand='Apple iPhone'; else if(/ipad/.test(u)) brand='Apple iPad'; else if(/android/.test(u) && /mobile/.test(u)) brand='Android phone'; else if(/android/.test(u)) brand='Android device'; else if(/windows/.test(u)) brand='Windows PC'; else if(/macintosh|mac os x/.test(u)) brand='Mac'; document.getElementById('deviceInfo').textContent=brand; }
+function updateClock(){ const now=new Date(); try{ document.getElementById('date').textContent=new Intl.DateTimeFormat('en-PH',{timeZone:'Asia/Manila',weekday:'long',year:'numeric',month:'long',day:'numeric'}).format(now); document.getElementById('time').textContent=new Intl.DateTimeFormat('en-PH',{timeZone:'Asia/Manila',hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true}).format(now);}catch(e){ document.getElementById('date').textContent=now.toLocaleDateString(); document.getElementById('time').textContent=now.toLocaleTimeString(); } }
+
+/* audio (synth) */
+let audioCtx = null;
+let soundEnabled = (localStorage.getItem('sk_sound') !== '0');
+function ensureAudio(){ if (!audioCtx){ const A=window.AudioContext||window.webkitAudioContext; if(!A) return null; audioCtx=new A(); } if(audioCtx && audioCtx.state==='suspended') audioCtx.resume().catch(()=>{}); return audioCtx; }
+function playClickSound(){
+  if(!soundEnabled) return;
+  const ctx=ensureAudio(); if(!ctx) return;
+  const t=ctx.currentTime;
+  const g=ctx.createGain(); g.gain.setValueAtTime(1,t); g.connect(ctx.destination);
+  const o1=ctx.createOscillator(); o1.type='sine'; o1.frequency.value=880;
+  const o2=ctx.createOscillator(); o2.type='sine'; o2.frequency.value=1320;
+  o1.connect(g); o2.connect(g);
+  o1.start(t); o2.start(t+0.02); o1.stop(t+0.28); o2.stop(t+0.28);
+}
+function playSuccessSound(){
+  if(!soundEnabled) return;
+  const ctx=ensureAudio(); if(!ctx) return;
+  const t=ctx.currentTime;
+  const freqs=[660,880,1100,1320];
+  freqs.forEach((f,i)=>{ const o=ctx.createOscillator(); o.type=i%2? 'sine':'triangle'; o.frequency.value=f; const g=ctx.createGain(); g.gain.setValueAtTime(0.0001,t+i*0.07); g.gain.linearRampToValueAtTime(0.9,t+i*0.07+0.03); g.gain.linearRampToValueAtTime(0.0001,t+i*0.07+0.18); o.connect(g); g.connect(ctx.destination); o.start(t+i*0.07); o.stop(t+i*0.07+0.18); });
+}
+
+/* main */
+(function(){
+  const btn=document.getElementById('connectBtn');
+  const statusText=document.getElementById('statusText');
+  const soundBtn=document.getElementById('soundToggle');
+  const sarangola = document.getElementById('sarangolaAudio');
+
+  function updateSoundIcon(){ soundBtn.textContent = soundEnabled? '🔊':'🔇'; soundBtn.setAttribute('aria-pressed', String(!soundEnabled)); }
+  updateSoundIcon();
+  soundBtn.addEventListener('click', ()=>{ soundEnabled = !soundEnabled; localStorage.setItem('sk_sound', soundEnabled?'1':'0'); updateSoundIcon(); if(soundEnabled) ensureAudio(); });
+
+  setTimeout(()=>{ btn.disabled=false; statusText.textContent=''; }, 900);
+
+  btn.addEventListener('click', ()=>{
+    // 1) beep
+    playClickSound();
+
+    // 2) start sarangola (if enabled and available)
+    if (soundEnabled && sarangola){
+      try {
+        sarangola.currentTime = 0;
+        sarangola.volume = 1.0;
+        sarangola.play().catch((e)=>{});
+      } catch(e){}
+    }
+
+    // 3) proceed with redirect after MUSIC_PLAY_DURATION_MS
+    btn.disabled=true;
+    statusText.textContent='Connecting…';
+    const params=paramsToObject(location.search);
+    const redirect=params.auth_url||params.auth||params.redirect||params.redirect_uri||params.target;
+    const doRedirect = () => {
+      if (redirect){ window.location.href = redirect; return; }
+      if (!AUTH_URL){ statusText.textContent = 'AUTH_URL not configured.'; btn.disabled = false; return; }
+      if (!POST_MODE){ const q = buildQuery(params); const target = AUTH_URL + (q ? ('?' + q) : ''); window.location.href = target; return; }
+      const form = document.createElement('form'); form.method = 'POST'; form.action = AUTH_URL;
+      Object.keys(params).forEach(k=>{
+        const v = params[k];
+        if (Array.isArray(v)) v.forEach(item=>{ const i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=item; form.appendChild(i);});
+        else { const i=document.createElement('input'); i.type='hidden'; i.name=k; i.value=v; form.appendChild(i); }
+      });
+      document.body.appendChild(form); form.submit();
+    };
+    setTimeout(doRedirect, MUSIC_PLAY_DURATION_MS);
+  });
+
+  btn.addEventListener('keyup', e=>{ if(e.key==='Enter'||e.key===' ') btn.click(); });
+
+  detectDevice(); updateClock(); setInterval(updateClock,1000);
+
+  const params=paramsToObject(location.search);
+  const successFlags=['connected','status','success','auth_result'];
+  const isSuccess = successFlags.some(k=> { if(!params[k]) return false; const v=String(params[k]).toLowerCase(); return v==='1'||v==='true'||v==='success'||v==='ok'; });
+  if(isSuccess) setTimeout(()=> { playSuccessSound(); if (soundEnabled && sarangola){ try{ sarangola.currentTime = 0; sarangola.play().catch(()=>{}); }catch(e){} } }, 600);
+
+  const toggleHotlinesBtn=document.getElementById('toggleHotlines');
+  const hotlinesFull=document.getElementById('hotlinesFull');
+  if(toggleHotlinesBtn && hotlinesFull){
+    toggleHotlinesBtn.addEventListener('click', ()=>{
+      const expanded = toggleHotlinesBtn.getAttribute('aria-expanded')==='true';
+      toggleHotlinesBtn.setAttribute('aria-expanded', String(!expanded));
+      if (expanded){ hotlinesFull.hidden=true; hotlinesFull.setAttribute('aria-hidden','true'); toggleHotlinesBtn.textContent='Show all hotlines'; }
+      else { hotlinesFull.hidden=false; hotlinesFull.setAttribute('aria-hidden','false'); toggleHotlinesBtn.textContent='Hide hotlines'; setTimeout(()=> hotlinesFull.scrollIntoView({behavior:'smooth',block:'center'}),120); }
+    });
+  }
+})();
+</script>
+</body>
+</html>
